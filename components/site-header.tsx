@@ -22,6 +22,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
+import { useSession } from "@/lib/auth-client"
 
 const navLinks = [
   { label: "Browse Jobs", href: "/jobs" },
@@ -42,6 +43,8 @@ function isActivePath(pathname: string, href: string) {
 function SiteHeader() {
   const pathname = usePathname()
   const [menuOpen, setMenuOpen] = React.useState(false)
+
+  const { data: session } = useSession()
 
   return (
     <header className="sticky top-0 z-50 w-full px-4 pt-4 sm:px-6">
@@ -92,18 +95,26 @@ function SiteHeader() {
           />
 
           <div className="hidden items-center gap-3 md:flex">
-            <Link
-              href="/sign-in"
-              className={cn(buttonVariants(), secondaryActionClass)}
-            >
-              Sign In
-            </Link>
-            <Link
-              href="/register"
-              className={cn(buttonVariants(), primaryActionClass)}
-            >
-              Get Started
-            </Link>
+            {session?.user ? (
+              <>
+                <p>{session?.user?.name}</p>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/sign-in"
+                  className={cn(buttonVariants(), secondaryActionClass)}
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/register"
+                  className={cn(buttonVariants(), primaryActionClass)}
+                >
+                  Get Started
+                </Link>
+              </>
+            )}
           </div>
 
           <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
@@ -167,24 +178,36 @@ function SiteHeader() {
               </nav>
 
               <SheetFooter className="mt-auto gap-2 border-t border-white/10 p-4">
-                <Link
-                  href="/sign-in"
-                  onClick={() => setMenuOpen(false)}
-                  className={cn(
-                    buttonVariants(),
-                    secondaryActionClass,
-                    "w-full"
-                  )}
-                >
-                  Sign In
-                </Link>
-                <Link
-                  href="/register"
-                  onClick={() => setMenuOpen(false)}
-                  className={cn(buttonVariants(), primaryActionClass, "w-full")}
-                >
-                  Get Started
-                </Link>
+                {session?.user ? (
+                  <>
+                    <p>{session?.user?.name}</p>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/sign-in"
+                      onClick={() => setMenuOpen(false)}
+                      className={cn(
+                        buttonVariants(),
+                        secondaryActionClass,
+                        "w-full"
+                      )}
+                    >
+                      Sign In
+                    </Link>
+                    <Link
+                      href="/register"
+                      onClick={() => setMenuOpen(false)}
+                      className={cn(
+                        buttonVariants(),
+                        primaryActionClass,
+                        "w-full"
+                      )}
+                    >
+                      Get Started
+                    </Link>
+                  </>
+                )}
               </SheetFooter>
             </SheetContent>
           </Sheet>

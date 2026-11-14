@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link"
 import { Eye } from "lucide-react"
 
@@ -11,9 +13,27 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
+import { signIn } from "@/lib/auth-client"
+import { userInfo } from "os"
 
 const inputClass =
   "h-11 rounded-xl border-white/10 bg-white/[0.04] text-white placeholder:text-white/40 focus-visible:border-[#6c5bf6]/60 focus-visible:ring-[#6c5bf6]/30"
+
+const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault()
+
+  const form = new FormData(e.currentTarget)
+  const userInfo = Object.fromEntries(form.entries())
+
+  const { data, error } = await signIn.email({
+    email: userInfo.email as string,
+    password: userInfo.password as string,
+    rememberMe: true,
+    callbackURL: "/",
+  })
+
+  console.log("User Login information", data, error)
+}
 
 function SignInPage() {
   return (
@@ -32,7 +52,7 @@ function SignInPage() {
         <AuthDivider>or continue with email</AuthDivider>
       </div>
 
-      <form className="mt-6 space-y-5">
+      <form onSubmit={handleSignIn} className="mt-6 space-y-5">
         <div className="space-y-2">
           <Label htmlFor="email" className="text-white/80">
             Email address
